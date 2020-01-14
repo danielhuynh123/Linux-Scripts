@@ -1,0 +1,86 @@
+#!/bin/bash
+#Author: Daniel Huynh
+#Date: December 5, 2019.
+#sdbTool: Menu to create, format, mount, unmount, delete view partitions
+
+#---Functions---
+function partition_create() {
+        sudo partition_create /dev/sdb $1 $2 &> /dev/null
+        return $?
+}
+
+function partition_format() {
+        sudo mkfs -t ext4 /dev/sdb $1 &> /dev/null
+        return $?
+}
+
+function partition_mount() {
+        sudo mkdir $2
+        sudo mount -t ext4 /dev/sdb $1 $2 &> /dev/null
+        return $?
+}
+
+function partition_delete() {
+        sudo fdisk -d /dev/sdb $1 &> /dev/null
+        return $?
+}
+
+function partition_unmount() {
+        sudo umount $1
+        return $?
+}
+
+function partition_view() {
+        sudo fdisk -l
+        return $?
+}
+
+#---Display Menu---
+
+while [ "$choice" != "q" -a "$choice" != "Q" ];
+do
+   echo -e "1) Create Partition\n2) Format Partition\n3) Mount Partition\n4) Delete Partition\n5) Unmount Partition\n6) View Partitions\nQ) Quit"
+   read choice
+
+   case $choice
+   in
+   1) read -p "Enter partition ID: " pid
+      read -p "Enter partition size: " psize
+      partition_create $pid $psize
+      if [ $? -eq 0 ]
+        then echo "Partition successfully created."
+        else echo "Failed to create partition."
+      fi;;
+   2) read -p "Enter partition ID: " pid
+      partition_format $pid
+      if [ $? -eq 0 ]
+        then echo "Partition successfully formated."
+        else echo "Failed to format partition."
+      fi;;
+   3) read -p "Enter partition ID: " pid
+      read -p "Enter mount location: " mloc
+      partition_mount $pid $mloc
+      if [ $? -eq 0 ]
+        then echo "Partition successfully mounted."
+        else echo "Failed to mount partition."
+      fi;;
+   4) read -p "Enter partition ID: " pid
+      partition_delete $pid
+      if [ $? -eq 0 ]
+        then echo "Partition successfully deleted."
+        else echo "Failed to delete partition."
+      fi;;
+   5) read -p "Enter partition ID/mounting point: " $unmount
+      partition_unmount $unmount
+      if [ $? -eq 0 ]
+        then echo "Partition successfully unmounted."
+        else echo "Failed to unmount partition."
+      fi;;
+   6) partition_view
+      if [ $? -eq 0 ]
+        then echo "Partition View successful."
+        else echo "Failed to view partition."
+      fi;;
+   esac
+done
+exit
