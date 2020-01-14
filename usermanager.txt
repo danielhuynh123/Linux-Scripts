@@ -1,0 +1,89 @@
+#!/bin/bash
+#by Daniel Huynh
+#This script is a tool to assist in the management of users.
+clear
+
+#While loop allows for repeat until user selects "Q"
+cont=1;
+while [[ "$cont" == 1 ]]; do
+#Display menu
+echo "A) Create a user account";
+echo "B) Delete a user account";
+echo "C) Change supplementary group for a user account";
+echo "D) Change initial group for a user account";
+echo "E) Change default login shell for a user account";
+echo "F) Change account expiration date for a user account";
+echo "Q) Quit";
+
+
+read selection
+
+echo "You entered $selection"
+sleep 3
+
+if [ "$selection" = "a" ] || [ "$selection" = "A" ] #Valid selection includes lowercase and capital
+then
+clear #clears terminal for aesthetic reasons.
+  echo "~--Create a user account--~"
+  read -p "Username: " username;
+    sudo useradd "$username"
+  read -p "Home directory: " homedir;
+    sudo usermod -d "$homedir" "$username"
+  read -p "Default login shell: " $defaultsh;
+    sudo usermod -s "$defaultsh" "$username"
+elif [ "$selection" = "b" ] || [ "$selection" = "B" ]
+then
+clear
+  echo "~--Delete a user account--~"
+  read -p "Username: " username;
+
+  echo "You are about to delete the account and home directory of $username" 
+  read -p "Please confirm with "Y": " confirm;
+
+  #Validation as a precaution. User has final chance to cancel deletion.  
+  if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]
+  then
+    sudo userdel -r "$username"
+    sudo groupdel "$username"
+    #if primary group was changed, userdel will not delete the original group
+    #added groupdel to delete original group, assuming that it is required to be
+  else
+    echo "Confirmation unsuccessful. Cancelling changes..."
+  fi
+elif [ "$selection" = "c" ] || [ "$selection" = "C" ]
+then
+  echo "~--Change (add) supplementary group of a user--~"
+  read -p "Username: " username;
+  read -p "Group name: " grp;
+    sudo usermod -a -G "$grp" "$username"
+elif [ "$selection" = "d" ] || [ "$selection" = "D" ]
+then
+  echo "~--Change initial group of a user--~"
+  read -p "Username: " username;
+  read -p "Group name: " grp;
+    sudo usermod -g "$grp" "$username"
+elif [ "$selection" = "e" ] || [ "$selection" = "E" ]
+then
+  echo "~--Change default login shell for a user--~"
+  read -p "Username: " username;
+  read -p "Default login shell: " defaultsh;
+    sudo chsh -s "$defaultsh" "$username"
+elif [ "$selection" = "f" ] || [ "$selection" = "F" ]
+then
+  echo "~--Change expiration date of a user--~"
+  read -p "Username: " username;
+  read -p "Expiration date (YYYY-MM-DD): " exp;
+    usermod -e "$exp" "$username"
+elif [ "$selection" = "q" ] || [ "$selection" = "Q" ]
+then
+  echo "Exiting script..."
+  cont=0;
+else
+  echo "Invalid input"
+fi
+
+sleep 3
+#additional to the 3 second sleep, user is asked to press RETURN to continue
+read -p "Press RETURN to continue" REPLY;
+clear
+done
