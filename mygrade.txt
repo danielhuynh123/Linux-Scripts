@@ -1,0 +1,34 @@
+#!/bin/bash
+#by Daniel Huynh - Nov 19
+#This script processes and outputs letter grades based on a user's input,
+
+read -p "Enter the Assignment mark (0 to 40): " assignment
+read -p "Enter the Test1 mark (0 to 15): " test1
+read -p "Enter the Test2 mark (0 to 15): " test2
+read -p "Enter the Final Exam mark (0 to 30): " exam
+
+final=$(($assignment+$test1+$test2+$exam))
+
+echo "$final";
+
+echo -n "Your final grade is ";
+
+case "$final" in
+
+[0-9]|[1-4][0-9]) echo -n "F";;
+[5][0-2]) echo -n "D-";;
+[5][3-6]) echo -n "D";;
+[5][7-9]) echo -n "D+";;
+[6][0-2]) echo -n "C-";;
+[6][3-6]) echo -n "C";;
+[6][7-9]) echo -n "C+";;
+[7][0-2]) echo -n "B-";;
+[7][3-6]) echo -n "B";;
+[7][7-9]) echo -n "B+";;
+[8][0-4]) echo -n "A-";;
+[8][5-9]) echo -n "A";;
+[9][0-9]|[1][0][0]) echo -n "A+";;
+*) echo "Invalid input";;
+esac
+
+echo ".";
